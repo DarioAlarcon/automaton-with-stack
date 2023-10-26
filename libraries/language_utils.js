@@ -2,7 +2,7 @@ const languages = {
     en: {
         textInput: 'Enter your word',
         buttomText: 'Go!',
-        aboutRegularExpression: 'Our regular expression is: a(abUabb)^3',
+        aboutRegularExpression: 'Dario Alarcon',
         historyTittle: 'History',
         spanishOption: 'Spanish',
         englishOption: 'English',
@@ -11,7 +11,7 @@ const languages = {
     es: {
         textInput: 'Ingresa tu palabra',
         buttomText: '¡Vamos!',
-        aboutRegularExpression: 'Nuestra expresión regular es: a(abUabb)^3',
+        aboutRegularExpression: 'Dario Alarcon',
         historyTittle: 'Historial',
         spanishOption: 'Español',
         englishOption: 'Ingles',
@@ -20,7 +20,7 @@ const languages = {
     fr: {
         textInput: 'Entrez votre mot',
         buttomText: 'Allons-y!',
-        aboutRegularExpression: 'notre expression régulière est: a(abUabb)^3',
+        aboutRegularExpression: 'Dario Alarcon',
         historyTittle: 'Histoire',
         spanishOption: 'Espagnol',
         englishOption: 'Anglais',

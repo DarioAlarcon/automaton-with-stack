@@ -132,37 +132,49 @@ function createHistoryTile(userWord, isValidate){
     insertParagraphIntoDOM(historyTile)
     
   
-    saveToLocalStorage(userWord, isValidate);
+    saveToDatabase(userWord, isValidate);
 }
 
-function saveToLocalStorage(userWord, isValidate) {
-  const historyData = JSON.parse(localStorage.getItem('historyData')) || [];
-  historyData.push({ userWord, isValidate });
-  localStorage.setItem('historyData', JSON.stringify(historyData));
+function saveToDatabase(userWord, isValidate) {
+  fetch('http://127.0.0.1:5000/guardar_historial', {
+      method: 'POST',
+      body: new URLSearchParams({ userWord, isValidate }),
+      headers: {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+      }
+  });
 }
 
-function clearLocalStorage() {
-  localStorage.clear();
+async function retrieveHistoryData() {
+  const response = await fetch('http://127.0.0.1:5000/obtener_historial');
+  const historial = await response.json();
+  console.log(historial)
+  return historial ;
 }
 
-function retrieveHistoryData() {
-  return JSON.parse(localStorage.getItem('historyData')) || [];
-}
 
 function displayHistoryData(historyData) {
+  console.log(historyData);
   for (const item of historyData) {
-      createHistoryTile(item.userWord, item.isValidate);
+    const userWord = item[0];
+    const isValidate = item[1];
+    console.log(userWord, isValidate);
+    createHistoryTile(userWord, JSON.parse(isValidate));
   }
 }
 
-function initializePage() {
-  const historyData = retrieveHistoryData();
-  clearLocalStorage();
+
+ async function initializePage() {
+  const historyData =  await retrieveHistoryData();
+  console.log(historyData) // Await the data
   displayHistoryData(historyData);
 }
 
 window.addEventListener('load', initializePage);
 
+/*function retrieveHistoryData() {
+  return JSON.parse(localStorage.getItem('historyData')) || [];
+}*/
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 const $ = go.GraphObject.make;
