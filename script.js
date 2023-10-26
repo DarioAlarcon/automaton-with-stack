@@ -135,6 +135,14 @@ function createHistoryTile(userWord, isValidate){
     saveToDatabase(userWord, isValidate);
 }
 
+function researchHistoryTile(userWord, isValidate){
+  var historyTile = createHistoryTileItem(userWord);
+  var historyTileSpan = createHistoryTileSpan(isValidate);
+  insertSpanInParagraph(historyTile,historyTileSpan);
+  insertParagraphIntoDOM(historyTile)
+  
+}
+
 function saveToDatabase(userWord, isValidate) {
   fetch('http://127.0.0.1:5000/guardar_historial', {
       method: 'POST',
@@ -159,7 +167,7 @@ function displayHistoryData(historyData) {
     const userWord = item[0];
     const isValidate = item[1];
     console.log(userWord, isValidate);
-    createHistoryTile(userWord, JSON.parse(isValidate));
+    researchHistoryTile(userWord, JSON.parse(isValidate));
   }
 }
 
