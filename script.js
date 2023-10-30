@@ -34,9 +34,10 @@ const transitions = {
 
 const pda = new PDA(transitions);
 
-function wordChecking(symbolToCheck, symbolOrder){
+async function wordChecking(symbolToCheck, symbolOrder){
   symbolSpan.innerText = symbolToCheck;
   symbolOrderSpan.innerText = symbolOrder;
+  await sleep(get_speed())
   console.log(pda.transitions)
   const stateTransitions = pda.transitions[pda.currentState][symbolToCheck];
   if (!stateTransitions) {
@@ -49,7 +50,8 @@ function wordChecking(symbolToCheck, symbolOrder){
       return false;
   }
 
-  applyTransition(validTransition, keyNodeTransiction)
+  await applyTransition(validTransition, keyNodeTransiction)
+  await sleep(get_speed()) 
   pda.currentState = validTransition.nextState;
   showCurrentNodeGraph(pda.currentState)
 }
@@ -70,18 +72,21 @@ function findValidTransition(stateTransitions){
   return validTransition;
 }
 
- function applyTransition(transition, keyNodeTransiction) {
+async function applyTransition(transition, keyNodeTransiction) {
   pda.currentState = transition.nextState;
   showCurrentNodeGraph(keyNodeTransiction)
+  await sleep(get_speed())
   if (transition.pop) {
       popFromStack(transition.pop);
+      await sleep(get_speed())
   }
   if (transition.push) {
-      pushToStack(transition.push);
+      await pushToStack(transition.push);
+      await sleep(get_speed())
   }
 }
 
-function popFromStack(symbol) {
+async function popFromStack(symbol) {
   const popped = pda.stack.pop();
   if (popped !== symbol) {
       return false;
@@ -89,22 +94,22 @@ function popFromStack(symbol) {
   deleteItemIntoStack(pda.stack)
 }
 
-function pushToStack(symbols) {
+async function pushToStack(symbols) {
   pushCharacters = symbols.split('');
-  pushCharacters.forEach( char => {
+  pushCharacters.forEach( async char => {
       pda.stack.push(char);
-      createStack(char);
+      await createStack(char);
   });
 }
 
-function accept(input) {
+async function accept(input) {
   pda.inputlength = input.length;
   reset();
-  
+  await sleep(get_speed())
   console.log(pda.currentState)
   let symbolOrder = 1;
   for (const symbol of input) {
-    wordChecking(symbol, symbolOrder);
+    await wordChecking(symbol, symbolOrder);
     symbolOrder = symbolOrder+1;
   }
   console.log(pda.stack.length)
@@ -116,11 +121,7 @@ function reset() {
   showCurrentNodeGraph(pda.currentState)
   pda.stack = ["#"];
   deleteItemIntoStack(pda.stack)
-  console.log(pda)
 }
-
-
-
 //************************************************************************************************************************************************* */
 function createStackItem(symbolPush){
   const item = document.createElement('div');
@@ -137,6 +138,7 @@ function insertItemIntoStack(paragraph){
 async function createStack(symbolPush){
   var stackItem = createStackItem(symbolPush);
   insertItemIntoStack(stackItem)
+  await sleep(get_speed())
 }
 
 function deleteItemIntoStack(stack){
@@ -146,10 +148,6 @@ function deleteItemIntoStack(stack){
       createStack(item)
   }
 }
-
-//******************************************************************************************************************************************************************** */
-
-
 //*************************************************************************************************************************************************************************** */
 
 function sleep(ms) {
@@ -239,11 +237,6 @@ function displayHistoryData(historyData) {
 }
 
 window.addEventListener('load', initializePage);
-
-/*function retrieveHistoryData() {
-  return JSON.parse(localStorage.getItem('historyData')) || [];
-}*/
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 const $ = go.GraphObject.make;
 
@@ -375,7 +368,7 @@ document.addEventListener("DOMContentLoaded", function() {
       }
 
       async function processString(wordToValidate) { 
-        const isAccepted = accept(wordToValidate+" ")
+        const isAccepted = await accept(wordToValidate+" ")
         if (!isAccepted) {
             speakResult(false);
             createHistoryTile(wordToValidate, false);
