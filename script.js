@@ -1,91 +1,151 @@
+const symbolSpan = document.getElementById('symbol-checking')
+const symbolOrderSpan = document.getElementById('symbol-checking-number')
 
-class State {
-    constructor(name, isAccepting) {
-        this.name = name;
-        this.isAccepting = isAccepting;
-    }
+class PDA {
+  constructor(transitions) {
+    this.stack = ["#"];
+    this.currentState = 'q0';
+    this.inputlength=0; 
+    this.transitions= transitions
+  }
+}
+const transitions = {
+  q0: {
+    'a': [
+      { key: 'T2' ,nextState: 'q1', pop: "a" },
+      { key: 'T1' ,nextState: 'q0', pop: "#", push: '#a' },
+      { key: 'T1' ,nextState: 'q0', pop: "a", push: 'aa' },
+      { key: 'T1' ,nextState: 'q0', pop: "b", push: 'ba' },
+    ],
+    'b': [
+      { key: 'T2' ,nextState: 'q1', pop: "b" },
+      { key: 'T1' ,nextState: 'q0', pop: "#", push: '#b' },
+      { key: 'T1' ,nextState: 'q0', pop: "a", push: 'ab' },
+      { key: 'T1' ,nextState: 'q0', pop: "b", push: 'bb' },
+    ]
+  },
+  q1: {
+    'a': [{ key: 'T3' ,nextState: 'q1', pop: 'a' }],
+    'b': [{ key: 'T3' ,nextState: 'q1', pop: 'b' }],
+    ' ': [{ key: 'T4' ,nextState: 'q2', pop: '#', push: '#' }]
+  },
+  q2: {}
+};
+
+const pda = new PDA(transitions);
+
+function wordChecking(symbolToCheck, symbolOrder){
+  symbolSpan.innerText = symbolToCheck;
+  symbolOrderSpan.innerText = symbolOrder;
+  console.log(pda.transitions)
+  const stateTransitions = pda.transitions[pda.currentState][symbolToCheck];
+  if (!stateTransitions) {
+      return false
+  }
+  let validTransition = findValidTransition(stateTransitions)
+  var keyNodeTransiction=highlightLinkBetweenNodes(pda.currentState,validTransition.nextState)
+  console.log(keyNodeTransiction)
+  if (!validTransition) {
+      return false;
+  }
+
+  applyTransition(validTransition, keyNodeTransiction)
+  pda.currentState = validTransition.nextState;
+  showCurrentNodeGraph(pda.currentState)
 }
 
-class Transition {
-    constructor(fromState, toState, symbol) {
-        this.fromState = fromState;
-        this.toState = toState;
-        this.symbol = symbol;
-    }
+function findValidTransition(stateTransitions){
+  let  validTransition=null;
+  for (const transition of stateTransitions) {
+      if (!transition.pop || transition.pop === pda.stack[pda.stack.length - 1]) {
+          if(!transition.push){
+              if(pda.stack.length > pda.inputlength/2){
+                validTransition = transition;
+                break
+              }
+          }
+        validTransition= transition;
+      }
+  }
+  return validTransition;
 }
 
-class Automaton {
-    constructor(states, transitions, initialState) {
-        this.states = states;
-        this.transitions = transitions;
-        this.currentState = initialState;
-    }
-
-    processInput(input) {
-        for (var i = 0; i < input.length; i++) {
-            const symbol = input[i];
-            const transition = this.transitions.find(t => t.fromState === this.currentState && t.symbol === symbol);
-            if (!transition) {
-                this.currentState=q0
-                return false; 
-            }
-            this.currentState = transition.toState;
-            console.log(symbol)
-        }
-        var result= this.currentState.isAccepting;
-        this.currentState=q0
-         return result;
-    }
+ function applyTransition(transition, keyNodeTransiction) {
+  pda.currentState = transition.nextState;
+  showCurrentNodeGraph(keyNodeTransiction)
+  if (transition.pop) {
+      popFromStack(transition.pop);
+  }
+  if (transition.push) {
+      pushToStack(transition.push);
+  }
 }
 
+function popFromStack(symbol) {
+  const popped = pda.stack.pop();
+  if (popped !== symbol) {
+      return false;
+  }
+  deleteItemIntoStack(pda.stack)
+}
 
-const q0  = new State('q0', false);
-const q1  = new State('q1', true);
-const q2  = new State('q2', false);
-const q3  = new State('q3', false);
-const q4  = new State('q4', true);
-const q5  = new State('q5', false);
-const q6  = new State('q6', false);
-const q7  = new State('q7', true);
-const q8  = new State('q8', false);
-const q9  = new State('q9', false);
-const q10 = new State('q10', true);
-const q11 = new State('q11', true);
-const q12 = new State('q12', false);
-const q13 = new State('q13', true);
-const q14 = new State('q14', false);
-const q15 = new State('q15', true);
-const q16 = new State('q16', false)
+function pushToStack(symbols) {
+  pushCharacters = symbols.split('');
+  pushCharacters.forEach( char => {
+      pda.stack.push(char);
+      createStack(char);
+  });
+}
 
-const transitions = [
-    new Transition("q0",  "q1",  'a'),
-    new Transition("q1",  "q2",  'b'),
-    new Transition("q2",  "q3",  'b'),
-    new Transition("q3",  "q4",  'a'),
-    new Transition("q4",  "q5",  'b'),
-    new Transition("q5",  "q6",  'b'),
-    new Transition("q6",  "q7",  'a'),
-    new Transition("q7",  "q8",  'b'),
-    new Transition("q8",  "q9",  'b'),
-    new Transition("q9",  "q10", 'a'),
-    new Transition("q2",  "q11", 'a'),
-    new Transition("q11", "q12", 'b'),
-    new Transition("q12", "q13", 'a'),
-    new Transition("q13", "q14", 'b'),
-    new Transition("q14", "q15", 'a'),
-    new Transition("q5",  "q13", 'a'),
-    new Transition("q12", "q6",  'b'),
-    new Transition("q8",  "q15", 'a'),
-    new Transition("q14", "q9",  'b'),
-];
+function accept(input) {
+  pda.inputlength = input.length;
+  reset();
+  
+  console.log(pda.currentState)
+  let symbolOrder = 1;
+  for (const symbol of input) {
+    wordChecking(symbol, symbolOrder);
+    symbolOrder = symbolOrder+1;
+  }
+  console.log(pda.stack.length)
+  return pda.currentState === 'q2' && pda.stack.length === 1;
+}
 
-const states = [q0, q1, q2, q3, q4, q5, q6,q7,q8,q9,q10,q11,q12,q13,q14,q15,q16];
-const initialState = states.find((state) => state.name === "q0");
-const automaton = new Automaton(states, transitions, initialState);
+function reset() {
+  pda.currentState = 'q0';
+  showCurrentNodeGraph(pda.currentState)
+  pda.stack = ["#"];
+  deleteItemIntoStack(pda.stack)
+  console.log(pda)
+}
+
 
 
 //************************************************************************************************************************************************* */
+function createStackItem(symbolPush){
+  const item = document.createElement('div');
+  item.id = 'stack-item'; 
+  item.textContent = symbolPush;
+  return item;
+}
 
+function insertItemIntoStack(paragraph){
+  const container = document.getElementById('stack');
+  container.appendChild(paragraph);
+}
+
+async function createStack(symbolPush){
+  var stackItem = createStackItem(symbolPush);
+  insertItemIntoStack(stackItem)
+}
+
+function deleteItemIntoStack(stack){
+  const container = document.getElementById('stack');
+  container.innerHTML = "";
+  for(const item of stack){
+      createStack(item)
+  }
+}
 
 //******************************************************************************************************************************************************************** */
 
@@ -208,44 +268,16 @@ myDiagram.nodeTemplate =
         )
     );
 
-myDiagram.model.addNodeData({ key: "_",  name: "" , color: "transparent", loc: "-1100 -10" });
-myDiagram.model.addNodeData({ key: "q0",  name: "q0" , color: "purple", loc: "-1030 -10" });
-myDiagram.model.addNodeData({ key: "q1",  name: "q1" , color: "red",   loc: "-960 -10"  });
-myDiagram.model.addNodeData({ key: "q2",  name: "q2" , color: "purple", loc: "-890 -10"  });
-myDiagram.model.addNodeData({ key: "q3",  name: "q3" , color: "purple", loc: "-820 -10"  });
-myDiagram.model.addNodeData({ key: "q4",  name: "q4" , color: "red",   loc: "-750 -10"  });
-myDiagram.model.addNodeData({ key: "q5",  name: "q5" , color: "purple", loc: "-680 -10"  });
-myDiagram.model.addNodeData({ key: "q6",  name: "q6" , color: "purple", loc: "-610 -10"  });
-myDiagram.model.addNodeData({ key: "q7",  name: "q7" , color: "red",   loc: "-540 -10"  });
-myDiagram.model.addNodeData({ key: "q8",  name: "q8" , color: "purple", loc: "-470 -10"  });
-myDiagram.model.addNodeData({ key: "q9",  name: "q9" , color: "purple", loc: "-400 -10"  });
-myDiagram.model.addNodeData({ key: "q10", name: "q10", color: "red",   loc: "-330 -10"     });
-myDiagram.model.addNodeData({ key: "q11", name: "q11", color: "red",   loc: "-855 50"   });
-myDiagram.model.addNodeData({ key: "q12", name: "q12", color: "purple", loc: "-785 100"  });
-myDiagram.model.addNodeData({ key: "q13", name: "q13", color: "red",   loc: "-715 150"  });
-myDiagram.model.addNodeData({ key: "q14", name: "q14", color: "purple", loc: "-645 200"  });
-myDiagram.model.addNodeData({ key: "q15", name: "q15", color: "red",   loc: "-575 250"  });
-
-myDiagram.model.addNodeData({ key: "T1", color:"transparent", loc: "-995 -10"  });
-myDiagram.model.addNodeData({ key: "T2", color:"transparent", loc: "-925 -10"  });
-myDiagram.model.addNodeData({ key: "T3", color:"transparent", loc: "-855 -10"  });
-myDiagram.model.addNodeData({ key: "T4", color:"transparent", loc: "-785 -10"  });
-myDiagram.model.addNodeData({ key: "T5", color:"transparent", loc: "-715 -10"  });
-myDiagram.model.addNodeData({ key: "T6", color:"transparent", loc: "-645 -10"  });
-myDiagram.model.addNodeData({ key: "T7", color:"transparent", loc: "-575 -10"  });
-myDiagram.model.addNodeData({ key: "T8", color:"transparent", loc: "-505 -10"  });
-myDiagram.model.addNodeData({ key: "T9", color:"transparent", loc: "-435 -10"  });
-myDiagram.model.addNodeData({ key: "T10", color:"transparent", loc: "-365 -10"  });
-myDiagram.model.addNodeData({ key: "T11", color:"transparent", loc: "-872 20"  });
-myDiagram.model.addNodeData({ key: "T12", color:"transparent", loc: "-820 75"  });
-myDiagram.model.addNodeData({ key: "T13", color:"transparent", loc: "-750 125"  });
-myDiagram.model.addNodeData({ key: "T14", color:"transparent", loc: "-680 175"  });
-myDiagram.model.addNodeData({ key: "T15", color:"transparent", loc: "-610 222"  });
-myDiagram.model.addNodeData({ key: "T16", color:"transparent", loc: "-697 40"  });
-myDiagram.model.addNodeData({ key: "T17", color:"transparent", loc:  "-695 70" });
-myDiagram.model.addNodeData({ key: "T18", color:"transparent",  loc: "-522 90"  });
-myDiagram.model.addNodeData({ key: "T19", color:"transparent", loc:  "-520 120" });
-
+    myDiagram.model.addNodeData({ key: "_",  name: "" , color: "transparent", loc: "-1100 -10" });
+    myDiagram.model.addNodeData({ key: "q0",  name: "q0" , color: "purple", loc: "-1030 -10" });
+    myDiagram.model.addNodeData({ key: "q1",  name: "q1" , color: "purple",   loc: "-960 -10"  });
+    myDiagram.model.addNodeData({ key: "q2",  name: "q2" , color: "red", loc: "-890 -10"  });
+    
+    myDiagram.model.addNodeData({ key: "T2", color:"transparent", loc: "-995 -10"  });
+    myDiagram.model.addNodeData({ key: "T4", color:"transparent", loc: "-925 -10"  });
+    myDiagram.model.addNodeData({ key: "T1", color:"transparent", loc: "-1030 25"  });
+    myDiagram.model.addNodeData({ key: "T3", color:"transparent", loc: "-960 25"  });
+    
 myDiagram.linkTemplate =
     $(go.Link,
         $(go.Shape, { 
@@ -254,13 +286,6 @@ myDiagram.linkTemplate =
     ),
         $(go.Shape, { toArrow: "Standard" }),
         $(go.Panel, "Auto",  
-          $(go.Shape,  
-            {
-              fill: $(go.Brush, "Radial",
-                { 0: "rgb(240, 240, 240)", 0.3: "rgb(240, 240, 240)", 1: "rgba(240, 240, 240, 0)" }),
-              stroke: null
-            },
-            ),
             
           $(go.TextBlock, "",  // the label text
             {
@@ -276,27 +301,12 @@ myDiagram.linkTemplate =
     );
 
 myDiagram.model.addLinkData({ from: "_",  to: "q0"  });
-myDiagram.model.addLinkData({ from: "q0",  to: "q1"  , text: "a", key:"T1"});
-myDiagram.model.addLinkData({ from: "q1",  to: "q2"  , text: "b", key:"T2"});
-myDiagram.model.addLinkData({ from: "q2",  to: "q3"  , text: "b", key:"T3"});
-myDiagram.model.addLinkData({ from: "q3",  to: "q4"  , text: "a", key:"T4"});
-myDiagram.model.addLinkData({ from: "q4",  to: "q5"  , text: "b", key:"T5"});
-myDiagram.model.addLinkData({ from: "q5",  to: "q6"  , text: "b", key:"T6"});
-myDiagram.model.addLinkData({ from: "q6",  to: "q7"  , text: "a", key:"T7"});
-myDiagram.model.addLinkData({ from: "q7",  to: "q8"  , text: "b", key:"T8"});
-myDiagram.model.addLinkData({ from: "q8",  to: "q9"  , text: "b", key:"T9"});
-myDiagram.model.addLinkData({ from: "q9",  to: "q10" , text: "a", key:"T10"});
-myDiagram.model.addLinkData({ from: "q2",  to: "q11" , text: "a", key:"T11"});
-myDiagram.model.addLinkData({ from: "q11", to: "q12" , text: "b", key:"T12"});
-myDiagram.model.addLinkData({ from: "q12", to: "q13" , text: "a", key:"T13"});
-myDiagram.model.addLinkData({ from: "q13", to: "q14" , text: "b", key:"T14"});
-myDiagram.model.addLinkData({ from: "q14", to: "q15" , text: "a", key:"T15"});
-myDiagram.model.addLinkData({ from: "q12", to: "q6"  , text: "b", key:"T16"});
-myDiagram.model.addLinkData({ from: "q5",  to: "q13" , text: "a", key:"T17"});
-myDiagram.model.addLinkData({ from: "q14", to: "q9"  , text: "b", key:"T18"});
-myDiagram.model.addLinkData({ from: "q8",  to: "q15" , text: "a", key:"T19"});
-
-
+myDiagram.model.addLinkData({ from: "q0",  to: "q0"  , text: "\n\n\n\n\n\nb, b/bb\na, b/ba\nb, a/ab\na, a/aa\nb, #/#b\na, #/#a ", key:"T1"});
+myDiagram.model.addLinkData({ from: "q0",  to: "q1"  , text: "b, b/λ\na,a/λ\n\n\n", key:"T2"});
+myDiagram.model.addLinkData({ from: "q1",  to: "q1"  , text: "\n\nb, b/λ\na,a/λ", key:"T3"});
+myDiagram.model.addLinkData({ from: "q1",  to: "q2"  , text: "λ, #/#\n\n", key:"T4"});
+    
+    
 async function showCurrentNodeGraph(key) {
     const currentNode = myDiagram.findNodeForKey(key);
     selectNode(currentNode);
@@ -343,6 +353,7 @@ document.addEventListener("DOMContentLoaded", function() {
     changeLanguage('en');
     var botton = document.getElementById("word-button");
     var input = document.getElementById("word-text");
+    deleteItemIntoStack(pda.stack)
 
 
     botton.addEventListener("click", handleButtonClick);
@@ -363,43 +374,17 @@ document.addEventListener("DOMContentLoaded", function() {
         input.value = '';
       }
 
-      async function processString(wordToValidate) {
-        automaton.currentState = initialState; 
-        for (let index = 0; index < wordToValidate.length; index++) {
-          const symbolSpan = document.getElementById('symbol-checking')
-          const symbolOrderSpan = document.getElementById('symbol-checking-number')
-          const symbol = wordToValidate[index];
-          const symbolOrder = index + 1;
-          const transition = automaton.transitions.find(
-            (t) => t.fromState === automaton.currentState.name && t.symbol === symbol
-          );
-          showCurrentNodeGraph(automaton.currentState.name)
-          await sleep(get_speed());
-          symbolSpan.innerText = symbol;
-          symbolOrderSpan.innerText = symbolOrder;
-          if (transition) {
-            var keyNodeTransiction=highlightLinkBetweenNodes(automaton.currentState.name,transition.toState)
-            showCurrentNodeGraph(keyNodeTransiction)
-            automaton.currentState = states.find(
-              (state) => state.name === transition.toState
-              );
-          } else {
-            automaton.currentState = initialState;
-          }
-      
-          await sleep(get_speed());
-      
-          if (!transition) {
+      async function processString(wordToValidate) { 
+        const isAccepted = accept(wordToValidate+" ")
+        if (!isAccepted) {
             speakResult(false);
             createHistoryTile(wordToValidate, false);
             return;
-          }
-        }
+         }
       
-        showCurrentNodeGraph(automaton.currentState.name)
-        speakResult(automaton.currentState.isAccepting);
-        createHistoryTile(wordToValidate, automaton.currentState.isAccepting);
-        
+         showCurrentNodeGraph(pda.currentState)
+         speakResult(isAccepted);
+         createHistoryTile(wordToValidate, isAccepted);   
     }
       
 });
