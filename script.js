@@ -202,7 +202,7 @@ function researchHistoryTile(userWord, isValidate){
 }
 
 function saveToDatabase(userWord, isValidate) {
-  fetch('http://127.0.0.1:5000/guardar_historial', {
+  fetch('https://automathon-with-stack-db-dev-dgkp.3.us-1.fl0.io/guardar_historial', {
       method: 'POST',
       body: new URLSearchParams({ userWord, isValidate }),
       headers: {
@@ -212,7 +212,7 @@ function saveToDatabase(userWord, isValidate) {
 }
 
 async function retrieveHistoryData() {
-  const response = await fetch('http://127.0.0.1:5000/obtener_historial');
+  const response = await fetch('https://automathon-with-stack-db-dev-dgkp.3.us-1.fl0.io/obtener_historial');
   const historial = await response.json();
   console.log(historial)
   return historial ;
