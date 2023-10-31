@@ -2,7 +2,7 @@ const languages = {
     en: {
         textInput: 'Enter your word',
         buttomText: 'Go!',
-        aboutRegularExpression: 'Dario Alarcon',
+        aboutRegularExpression: 'enter palindromic words of long pair',
         historyTittle: 'History',
         spanishOption: 'Spanish',
         englishOption: 'English',
@@ -11,7 +11,7 @@ const languages = {
     es: {
         textInput: 'Ingresa tu palabra',
         buttomText: '¡Vamos!',
-        aboutRegularExpression: 'Dario Alarcon',
+        aboutRegularExpression: 'valida palabras palindromas de largo par',
         historyTittle: 'Historial',
         spanishOption: 'Español',
         englishOption: 'Ingles',
@@ -20,7 +20,7 @@ const languages = {
     fr: {
         textInput: 'Entrez votre mot',
         buttomText: 'Allons-y!',
-        aboutRegularExpression: 'Dario Alarcon',
+        aboutRegularExpression: 'entrer des mots palindromiques de long par',
         historyTittle: 'Histoire',
         spanishOption: 'Espagnol',
         englishOption: 'Anglais',
