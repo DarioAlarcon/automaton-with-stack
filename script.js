@@ -202,7 +202,7 @@ function researchHistoryTile(userWord, isValidate){
 }
 
 function saveToDatabase(userWord, isValidate) {
-  fetch('https://automathon-with-stack-db-dev-dgkp.3.us-1.fl0.io/guardar_historial', {
+  fetch('https://automathon-with-stack-db-vwea.vercel.app', {
       method: 'POST',
       body: new URLSearchParams({ userWord, isValidate }),
       headers: {
@@ -212,7 +212,7 @@ function saveToDatabase(userWord, isValidate) {
 }
 
 async function retrieveHistoryData() {
-  const response = await fetch('https://automathon-with-stack-db-dev-dgkp.3.us-1.fl0.io/obtener_historial');
+  const response = await fetch('https://automathon-with-stack-db-vwea.vercel.app');
   const historial = await response.json();
   console.log(historial)
   return historial ;
