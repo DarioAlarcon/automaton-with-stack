@@ -200,7 +200,7 @@ function researchHistoryTile(userWord, isValidate){
   insertParagraphIntoDOM(historyTile)
   
 }
-const url = 'https://automathon-with-stack-db-dev-dgkp.3.us-1.fl0.io'
+const url = 'automathon-database-python.azurewebsites.net'
 function saveToDatabase(userWord, isValidate) {
   fetch(`${url}/guardar_historial`, {
       method: 'POST',
