@@ -211,15 +211,21 @@ function researchHistoryTile(userWord, isValidate){
 }
 const url = 'https://prueba-pythonapi-docker.azurewebsites.net'
 
-function saveToDatabase(historialItem) {
+function saveToDatabase(historial) {
   fetch(`${url}/guardar_historial`, {
       method: 'POST',
-      body: JSON.stringify(historialItem),  // Convertir el objeto a JSON
+      body: JSON.stringify(historial),  // Convertir el objeto a JSON
       headers: {
         'Content-Type': 'application/json'  // Especificar que los datos son JSON
       }
   });
 }
+
+
+ const historial = {
+                    userWord: "ABA",
+                    isValidate: false
+                };
 
 async function retrieveHistoryData() {
   const response = await fetch(`${url}/obtener_historial`);
