@@ -199,6 +199,7 @@ function createHistoryTile(userWord, isValidate){
     insertParagraphIntoDOM(historyTile)
     
     let historialItem = new HistorialItem(userWord, isValidate)
+    console.log(historialItem)
     saveToDatabase(historiial);
 }
 
