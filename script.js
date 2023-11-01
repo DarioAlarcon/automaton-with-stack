@@ -209,7 +209,7 @@ function researchHistoryTile(userWord, isValidate){
   insertParagraphIntoDOM(historyTile)
   
 }
-const url = 'https://prueba-pythonapi-docker.azurewebsites.net/'
+const url = 'https://prueba-pythonapi-docker.azurewebsites.net'
 
 function saveToDatabase(historialItem) {
   fetch(`${url}/guardar_historial`, {
