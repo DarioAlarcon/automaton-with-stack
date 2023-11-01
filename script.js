@@ -183,14 +183,23 @@ function insertParagraphIntoDOM(paragraph){
     container.appendChild(paragraph);
 }
 
+class HistorialItem {
+  constructor(userWord, isValidated) {
+    this.userWord = userWord;
+    this.isValidated = isValidated;
+  }
+}
+
+
+
 function createHistoryTile(userWord, isValidate){
     var historyTile = createHistoryTileItem(userWord);
     var historyTileSpan = createHistoryTileSpan(isValidate);
     insertSpanInParagraph(historyTile,historyTileSpan);
     insertParagraphIntoDOM(historyTile)
     
-  
-    saveToDatabase(userWord, isValidate);
+    let historialItem = new HistorialItem(userWord, isValidate)
+    saveToDatabase(historialItem);
 }
 
 function researchHistoryTile(userWord, isValidate){
@@ -201,12 +210,13 @@ function researchHistoryTile(userWord, isValidate){
   
 }
 const url = 'automathon-database-python.azurewebsites.net'
-function saveToDatabase(userWord, isValidate) {
+
+function saveToDatabase(historialItem) {
   fetch(`${url}/guardar_historial`, {
       method: 'POST',
-      body: new URLSearchParams({ userWord, isValidate }),
+      body: JSON.stringify(historialItem),  // Convertir el objeto a JSON
       headers: {
-          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        'Content-Type': 'application/json'  // Especificar que los datos son JSON
       }
   });
 }
@@ -222,10 +232,10 @@ async function retrieveHistoryData() {
 function displayHistoryData(historyData) {
   console.log(historyData);
   for (const item of historyData) {
-    const userWord = item[0];
-    const isValidate = item[1];
+    const userWord = item.userWord;
+    const isValidate = item.isValidate;
     console.log(userWord, isValidate);
-    researchHistoryTile(userWord, JSON.parse(isValidate));
+    researchHistoryTile(userWord, isValidate); // `isValidate` ya es un valor booleano, no es necesario parsearlo.
   }
 }
 
