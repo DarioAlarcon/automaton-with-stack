@@ -2,12 +2,12 @@ from flask import Flask, request, render_template, jsonify
 import sqlite3
 from flask_cors import CORS
 
-app = Flask(__name__, template_folder='C:/Users/dario/Desktop/6to semestre/c_ompiladores/programa-automata-pila/index.html')
+app = Flask(__name__, template_folder='')
 
 
 app.config['DEBUG'] = True
-CORS(app, resources={r"/obtener_historial": {"origins": "http://127.0.0.1:8080"}})
-CORS(app, resources={r"/guardar_historial": {"origins": "http://127.0.0.1:8080"}})
+CORS(app, resources={r"/obtener_historial": {"origins": "*"}})
+CORS(app, resources={r"/guardar_historial": {"origins": "*"}})
 
 # Crear la base de datos y la tabla
 def create_database():
@@ -23,6 +23,10 @@ def create_database():
     conn.close()
 
 create_database()
+
+@app.route("/prueba")
+def prueba():
+    return "Hello world!"
 
 @app.route('/')
 def index():
