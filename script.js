@@ -199,7 +199,7 @@ function createHistoryTile(userWord, isValidate){
     insertParagraphIntoDOM(historyTile)
     
     let historialItem = new HistorialItem(userWord, isValidate)
-    saveToDatabase(historialItem);
+    saveToDatabase(historiial);
 }
 
 function researchHistoryTile(userWord, isValidate){
@@ -211,10 +211,10 @@ function researchHistoryTile(userWord, isValidate){
 }
 const url = 'https://prueba-pythonapi-docker.azurewebsites.net'
 
-function saveToDatabase(historial) {
+function saveToDatabase(historiial) {
   fetch(`${url}/guardar_historial`, {
       method: 'POST',
-      body: JSON.stringify(historial),  // Convertir el objeto a JSON
+      body: JSON.stringify(historiial),  // Convertir el objeto a JSON
       headers: {
         'Content-Type': 'application/json'  // Especificar que los datos son JSON
       }
@@ -222,7 +222,7 @@ function saveToDatabase(historial) {
 }
 
 
- const historial = {
+ const historiial = {
                     userWord: "ABA",
                     isValidate: false
                 };
