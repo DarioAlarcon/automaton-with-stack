@@ -44,11 +44,11 @@ async function wordChecking(symbolToCheck, symbolOrder){
       return false
   }
   let validTransition = findValidTransition(stateTransitions)
-  var keyNodeTransiction=highlightLinkBetweenNodes(pda.currentState,validTransition.nextState)
-  console.log(keyNodeTransiction)
   if (!validTransition) {
       return false;
   }
+  var keyNodeTransiction=highlightLinkBetweenNodes(pda.currentState,validTransition.nextState)
+  console.log(keyNodeTransiction)
 
   await applyTransition(validTransition, keyNodeTransiction)
   await sleep(get_speed()) 
